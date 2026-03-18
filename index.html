@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather app-Easy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="cards">
+    <div class="search">
+        <input type="text" placeholder="enter city name">
+        <button><img src="images/search.png"></button>
+    </div>
+        <div class="weather">
+            <img src="images/rain.png" class="weather-icon">
+             <h1 class="temp">22°C</h1>
+             <h2 class="city">New York</h2>
+        <div class="details">
+            <div class="col">
+                <img src="images/humidity.png">
+                <div>
+                <p class="humidity">50%</p>
+                <p>Humidity</p>
+                </div>
+            </div>
+              <div class="col">
+                <img src="images/wind.png">
+                <div>
+                <p class="wind">15km/h</p>
+                <p>wind speed</p>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+<script>
+const apiKey = "949157c7077099930a56264583a2ef12";
+const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+const searchBox = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+
+window.checkweather = async function(city){
+    const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+    const data = await response.json();
+      console.log(data.weather[0].main);
+
+    if(data.cod == "404"){
+        alert("City not found");
+        return;
+    }
+     const icon = document.querySelector(".weather-icon");
+
+    if(data.weather[0].main == "Clouds"){
+        icon.src = "images/clouds.png";
+    }
+    else if(data.weather[0].main == "Clear"){
+        icon.src = "images/clear.png";
+    }
+    else if(data.weather[0].main == "Rain"){
+        icon.src = "images/rain.png";
+    }
+    else if(data.weather[0].main == "Drizzle"){
+        icon.src = "images/drizzle.png";
+    }
+    else if(data.weather[0].main == "Mist"){
+        icon.src = "images/mist.png";
+    }
+
+
+   document.querySelector(".city").innerHTML = 
+    data.name + " (" + data.weather[0].main + ")";
+    document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+    document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+    document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+}
+function getLocationWeather(){
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(async (position)=>{
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            const url = `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${lat}&lon=${lon}&appid=${apiKey}`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+
+            // ✅ YAHAN icon logic aayega
+            const icon = document.querySelector(".weather-icon");
+
+            if(data.weather[0].main == "Clouds"){
+                icon.src = "images/clouds.png";
+            }
+            else if(data.weather[0].main == "Clear"){
+                icon.src = "images/clear.png";
+            }
+            else if(data.weather[0].main == "Rain"){
+                icon.src = "images/rain.png";
+            }
+            else if(data.weather[0].main == "Drizzle"){
+                icon.src = "images/drizzle.png";
+            }
+            else if(data.weather[0].main == "Mist"){
+                icon.src = "images/mist.png";
+            }
+
+            // UI update
+            document.querySelector(".city").innerHTML = 
+    data.name + " (" + data.weather[0].main + ")";
+            document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+            document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+            document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+        });
+    }
+}
+
+// button click
+searchBtn.addEventListener("click", ()=>{
+     if(searchBox.value === ""){
+        alert("Enter city name");
+    } else {
+        checkweather(searchBox.value);
+    }
+});
+
+// enter press
+searchBox.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        if(searchBox.value === ""){
+            alert("Enter city name");
+        } else {
+            checkweather(searchBox.value);
+        }
+    }
+});
+getLocationWeather(); 
+</script>
+</body>
+</html>
